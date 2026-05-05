@@ -508,11 +508,12 @@ body::before {
   font-weight: 500;
 }
 .info-card p {
-  font-size: 15px;
-  line-height: 1.5;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--color-graphite);
   margin-bottom: 12px;
-  font-style: italic;
+  letter-spacing: 0.013em;
 }
 .info-card .legend {
   margin-top: 20px;

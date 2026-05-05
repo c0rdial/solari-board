@@ -325,7 +325,7 @@ export default function Board() {
           <div className="clock-block">
             <div className="clock">{clockLabel}</div>
             <div className="date">{dateLabel}</div>
-            <div className="location">UTC +08 · KUL</div>
+            <div className="location">KUL · DPS · UTC +08</div>
           </div>
         </header>
 
