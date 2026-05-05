@@ -123,12 +123,11 @@ body::before {
 }
 
 .title-block .sub {
-  font-family: var(--font-sans);
-  font-style: italic;
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--color-slate);
-  margin-top: 8px;
-  letter-spacing: 0.013em;
+  margin-top: 10px;
+  letter-spacing: 0.042em;
 }
 
 /* Clock readout becomes a small dark display block on the chassis. */
@@ -341,7 +340,11 @@ body::before {
   50%      { opacity: 1; transform: scale(1.18); }
 }
 
-/* Generic cell — flap text reads as digital readout on dark glass. */
+/* Generic cell — flap text reads as digital readout on dark glass.
+   min-width: 0 is critical: without it, the flap-row's content min-size
+   (≈120px for the 16-char DEST column) blows out the grid track, pushing
+   sibling cells off the right edge. With min-width: 0, the cell honors its
+   allocated 1fr width and clips overflow internally. */
 .cell {
   font-family: var(--font-mono);
   font-size: clamp(13px, 1.3vw, 16px);
@@ -350,6 +353,7 @@ body::before {
   color: var(--color-white);
   white-space: nowrap;
   overflow: hidden;
+  min-width: 0;
 }
 
 .cell-num    { text-align: center; font-weight: 400; font-size: clamp(12px, 1.1vw, 14px); }
@@ -422,11 +426,10 @@ body::before {
 }
 
 .footer-msg {
-  font-family: var(--font-sans);
-  font-style: italic;
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   color: var(--color-slate);
-  letter-spacing: 0.013em;
+  letter-spacing: 0.042em;
   flex: 1;
   text-align: center;
   max-width: 600px;
