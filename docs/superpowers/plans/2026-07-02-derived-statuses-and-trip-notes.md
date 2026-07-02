@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Departure statuses derive from system time (passed trips auto-become ARRIVED, earliest future trip auto-promotes to BOARDING), two new trips are added, noted rows open a flip-then-reveal trip card, the wall background warms to ivory, and a synthesized airport ambience plays behind the clacks.
+**Goal:** Departure statuses derive from system time (passed trips auto-become ARRIVED, earliest future trip auto-promotes to BOARDING), two new trips are added, noted rows open a flip-then-reveal trip card, the wall background warms to a sand/tan tone, and a synthesized airport ambience plays behind the clacks.
 
 **Architecture:** A pure `deriveDepartures(rows, now)` function in `src/lib/derive.ts` computes kind/sym/status/depart-text from the data + clock; `Board.tsx` recomputes it on its existing 1-second clock tick and lets the existing 60-second interval flip any cells whose text changed. Notes and ambience are additive: a `note` field drives a clickable row + overlay card reusing the info-card styles, and `src/lib/ambience.ts` synthesizes room tone + PA chimes on the existing AudioContext.
 
@@ -597,33 +597,36 @@ git commit -m "feat: trip notes card with flip-then-reveal on noted rows"
 
 ---
 
-### Task 4: Warm ivory background
+### Task 4: Warm sand/tan background
 
 **Files:**
 - Modify: `src/styles/globals.css:11` (`--color-canvas`) and `src/styles/globals.css:63-64` (body gradient)
 
 **Interfaces:** none — pure CSS token change; `.btn.muted` picks up the new canvas automatically.
 
-- [ ] **Step 1: Shift the canvas token and gradient to warm ivory**
+- [ ] **Step 1: Shift the canvas token and gradient to a deeper warm tan**
+
+(Superseded during execution: an initial pale-ivory pass read too light per follow-up
+feedback; deepened to a warm sand/tan instead.)
 
 In `:root`, change:
 
 ```css
---color-canvas:        #ece8df;
+--color-canvas:        #d6c9a3;
 ```
 
 In the `body` rule, change the gradient stops to warm equivalents:
 
 ```css
 background:
-  linear-gradient(180deg, #f2efe7 0%, var(--color-canvas) 50%, #e3ddd0 100%);
+  linear-gradient(180deg, #ded2ab 0%, var(--color-canvas) 50%, #c4b489 100%);
 ```
 
-Update the comment block at the top of the file: replace the words "Light grey chassis" with "Warm ivory chassis" so the DESIGN.md token description stays truthful.
+Update the comment block at the top of the file: replace the words "Light grey chassis" with "Warm sand chassis" so the DESIGN.md token description stays truthful.
 
 - [ ] **Step 2: Manual verification**
 
-Run: `npm run dev`. Confirm the wall reads warm paper rather than cool grey; the dark display cards, red boarding rail, header text (`--color-slate` on ivory), and footer message all remain comfortably legible; the faint 48px grid is still visible but not stronger than before.
+Run: `npm run dev`. Confirm the wall reads warm sand/tan rather than cool grey; the dark display cards, red boarding rail, header text (`--color-slate` on the tan wall), and footer message all remain comfortably legible; the faint 48px grid is still visible but not stronger than before.
 
 - [ ] **Step 3: Verify build and lint**
 
@@ -634,7 +637,7 @@ Expected: both pass.
 
 ```bash
 git add src/styles/globals.css
-git commit -m "style: warm the wall background from cool grey to ivory"
+git commit -m "style: warm the wall background from cool grey to sand/tan"
 ```
 
 ---

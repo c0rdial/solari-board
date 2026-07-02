@@ -20,7 +20,7 @@ trip details to a row.
    are ON TIME; rows without a date are TBD.
 2. Add trips: DENPASAR GA 821 departing 2026-07-16, JAKARTA GA 407 departing 2026-07-23.
 3. Rows that have a `note` are clickable and open a trip-details overlay card.
-4. Warm the page background: the default-grey wall shifts to a warm off-white/ivory.
+4. Warm the page background: the default-grey wall shifts to a warm sand/tan tone.
 5. Add a subtle synthesized airport ambience (room tone + occasional PA chime).
 
 ## Non-Goals
@@ -101,9 +101,11 @@ formatted depart text.
 
 ## Warmer Background
 
-- `--color-canvas` (`src/styles/globals.css`) shifts from cool grey `#e5e7eb` to a warm
-  ivory/paper tone, and the body gradient stops (`#ececef`, `#dcdee2`) shift to warm
-  equivalents so the wall reads intentional rather than default-grey.
+- `--color-canvas` (`src/styles/globals.css`) shifts from cool grey `#e5e7eb` to a deeper
+  warm sand/tan tone (`#d6c9a3`), and the body gradient stops (`#ececef`, `#dcdee2`) shift
+  to warm equivalents (`#ded2ab`, `#c4b489`) so the wall reads intentional rather than
+  default-grey — richer than a pale ivory, per follow-up feedback that ivory read too
+  light.
 - The board surface, flap cells, and accent colors are unchanged; only the wall around
   the board (and its grid lines if they clash) is adjusted. Text on the wall
   (header, footer, column captions) is re-checked for legibility against the new tone.
@@ -143,7 +145,7 @@ formatted depart text.
   tbd, boundary at exactly `now`.
 - Manual verification: board renders with OD 177 as ARRIVED · MAY 2026, GA 821 in the
   hero panel with a 14-day countdown, noted rows open/close the trip card via mouse
-  and keyboard, the wall reads warm ivory, and after a first click the room tone is
+  and keyboard, the wall reads warm sand/tan, and after a first click the room tone is
   audible and the ♪ toggle silences everything.
 
 ## Error Handling

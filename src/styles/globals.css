@@ -2,13 +2,13 @@
 
 /* ============================================================
    DESIGN.md tokens — aircraft control panel.
-   Light grey chassis, dark embedded display screens, urgency red
+   Warm sand chassis, dark embedded display screens, urgency red
    reserved for critical signaling. Typography pairs Proxima Nova
    (system-ui fallback), SF Mono (JetBrains Mono fallback for
    non-Mac), and Doto for the hero numerical readout.
    ============================================================ */
 :root {
-  --color-canvas:        #e5e7eb;
+  --color-canvas:        #d6c9a3;
   --color-display:       #11161c;
   --color-obsidian:      #000000;
   --color-white:         #ffffff;
@@ -61,7 +61,7 @@ body {
   /* Subtle warm tint at the seam between chassis and the display panels —
      replaces the old radial gradient. Reads as ambient cabin light, not space. */
   background:
-    linear-gradient(180deg, #ececef 0%, var(--color-canvas) 50%, #dcdee2 100%);
+    linear-gradient(180deg, #ded2ab 0%, var(--color-canvas) 50%, #c4b489 100%);
 }
 
 /* Faint engineered grid — DESIGN.md "imagery" calls for grid lines
