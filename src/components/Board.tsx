@@ -491,19 +491,21 @@ export default function Board() {
               {derived[tripOpen].status} · {derived[tripOpen].departText}
             </div>
             <p style={{ whiteSpace: 'pre-line' }}>{derived[tripOpen].note}</p>
-            {(derived[tripOpen].kind === 'boarding' || derived[tripOpen].kind === 'ontime') && (
-              <a
-                className="track-link"
-                href={flightradar24Url(derived[tripOpen].flight)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                track flight ↗
-              </a>
-            )}
-            <button className="close" onClick={() => setTripOpen(null)}>
-              close
-            </button>
+            <div className="card-actions">
+              {(derived[tripOpen].kind === 'boarding' || derived[tripOpen].kind === 'ontime') && (
+                <a
+                  className="track-link"
+                  href={flightradar24Url(derived[tripOpen].flight)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  track flight ↗
+                </a>
+              )}
+              <button className="close" onClick={() => setTripOpen(null)}>
+                close
+              </button>
+            </div>
           </div>
         </div>
       )}

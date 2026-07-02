@@ -539,7 +539,6 @@ body::before {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 16px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
@@ -549,6 +548,15 @@ body::before {
   text-decoration: none;
 }
 .info-card .track-link:hover { text-decoration: underline; }
+
+/* Trip-card footer row: track link hugs the left, close pinned right
+   (margin-left:auto keeps close right-aligned even when no link renders). */
+.info-card .card-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
+}
+.info-card .card-actions .close { margin-top: 0; margin-left: auto; }
 .info-card .close {
   background: var(--color-white);
   border: none;
