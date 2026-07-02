@@ -402,17 +402,24 @@ export default function Board() {
             <div className="title">DEPARTURES</div>
             <div className="sub">the days we're in the same place.</div>
           </div>
-          <div className="clock-block">
-            <div className="clock">{clockLabel}</div>
-            <div className="date">{dateLabel}</div>
-            <div className="location">KUL · DPS · UTC +08</div>
+          <div className="header-cards">
             {apartDays !== null && (
-              <div className="apart">
-                {apartDays === 0
-                  ? 'SAME PLACE · TODAY'
-                  : `APART · ${apartDays} ${apartDays === 1 ? 'DAY' : 'DAYS'}`}
+              <div className="apart-block">
+                <div className="apart-count">{apartDays}</div>
+                <div className="apart-caption">
+                  {apartDays === 0
+                    ? 'same place today'
+                    : apartDays === 1
+                      ? 'day apart'
+                      : 'days apart'}
+                </div>
               </div>
             )}
+            <div className="clock-block">
+              <div className="clock">{clockLabel}</div>
+              <div className="date">{dateLabel}</div>
+              <div className="location">KUL · DPS · UTC +08</div>
+            </div>
           </div>
         </header>
 
