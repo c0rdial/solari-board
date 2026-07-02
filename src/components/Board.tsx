@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { departures } from '../content/departures';
 import { deriveDepartures, MONTH_NAMES, type DerivedDeparture } from '../lib/derive';
+import { startAmbience, type AmbienceHandle } from '../lib/ambience';
 
 const COL_WIDTHS = { dest: 16, flight: 7, gate: 4, status: 9, depart: 11 } as const;
 const FLAP_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·◇○✦—:/. ';
@@ -198,6 +199,7 @@ export default function Board() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const soundOnRef = useRef(soundOn);
   soundOnRef.current = soundOn;
+  const ambienceRef = useRef<AmbienceHandle | null>(null);
 
   const rowRefsRef = useRef<RowRefs[]>(
     departures.map(() => ({
@@ -227,6 +229,7 @@ export default function Board() {
     // between the silent cascade and the next 25s random flip feels broken.
     if (wasUninitialized && audioCtxRef.current && soundOnRef.current) {
       playClack(audioCtxRef.current, 0.14);
+      ambienceRef.current = startAmbience(audioCtxRef.current);
     }
   }, []);
 
@@ -324,6 +327,19 @@ export default function Board() {
     window.addEventListener('click', onClick);
     return () => window.removeEventListener('click', onClick);
   }, [ensureAudio]);
+
+  // Covers toggling after init; ensureAudio's first-init block covers the
+  // very first unmute (context doesn't exist yet at that point).
+  useEffect(() => {
+    if (soundOn) {
+      if (audioCtxRef.current && !ambienceRef.current) {
+        ambienceRef.current = startAmbience(audioCtxRef.current);
+      }
+    } else {
+      ambienceRef.current?.stop();
+      ambienceRef.current = null;
+    }
+  }, [soundOn]);
 
   useEffect(() => {
     if (!infoOpen && tripOpen === null) return;
