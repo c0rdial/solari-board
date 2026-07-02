@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { departures } from '../content/departures';
 import { daysApart, deriveDepartures, MONTH_NAMES, type DerivedDeparture } from '../lib/derive';
 import { startAmbience, type AmbienceHandle } from '../lib/ambience';
+import { fetchWeather } from '../lib/weather';
 
 const COL_WIDTHS = { dest: 16, flight: 7, gate: 4, status: 9, depart: 11 } as const;
 const FLAP_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·◇○✦—:/. ';
@@ -196,6 +197,7 @@ export default function Board() {
   const [soundOn, setSoundOn] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
   const [tripOpen, setTripOpen] = useState<number | null>(null);
+  const [weather, setWeather] = useState<{ dest: string; text: string } | null>(null);
   const flipLockRef = useRef(false);
 
   const derived = deriveDepartures(departures, clock);
@@ -368,6 +370,29 @@ export default function Board() {
   const boardingRow = derived.find((r) => r.kind === 'boarding');
   const apartDays = daysApart(departures, clock);
 
+  // Weather is decorative: on any failure the line simply doesn't render.
+  // Stored with its destination and render-guarded on a match, so a stale
+  // reading never shows against the wrong city (and nothing needs clearing
+  // in the effect). Re-fetches on promotion and every 30 minutes.
+  const boardingDest = boardingRow?.dest ?? null;
+  useEffect(() => {
+    if (!boardingDest) return;
+    const ctrl = new AbortController();
+    const load = () => {
+      fetchWeather(boardingDest, ctrl.signal)
+        .then((text) => {
+          if (text) setWeather({ dest: boardingDest, text });
+        })
+        .catch(() => {});
+    };
+    load();
+    const id = window.setInterval(load, 30 * 60_000);
+    return () => {
+      ctrl.abort();
+      clearInterval(id);
+    };
+  }, [boardingDest]);
+
   return (
     <>
       <div className="board">
@@ -399,6 +424,9 @@ export default function Board() {
               <div className="meta">
                 {boardingRow.flight} · GATE {boardingRow.gate} · {boardingRow.status}
               </div>
+              {weather?.dest === boardingRow.dest && (
+                <div className="meta">{weather.text} there right now</div>
+              )}
             </div>
             <div>
               <div className="countdown">{boardingRow.departText}</div>
