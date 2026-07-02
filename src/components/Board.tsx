@@ -17,7 +17,9 @@ const rightPad = (text: string, width: number) =>
 const flightradar24Url = (flight: string) =>
   `https://www.flightradar24.com/data/flights/${flight.replace(/\s+/g, '').toLowerCase()}`;
 
-type FlipOptions = { stagger?: number; cycles?: number; cycleMs?: number };
+// `force` shuffles a flap even when it already shows the target character —
+// needed for the click-replay, where the whole row flips to its own text.
+type FlipOptions = { stagger?: number; cycles?: number; cycleMs?: number; force?: boolean };
 
 // Imperative DOM mutation — the mockup's flip routine, ported verbatim.
 // Walks the .flap children of flapRow, shuffles each through random
@@ -37,7 +39,7 @@ function flipTo(
   flaps.forEach((flap, i) => {
     const target = padded[i];
     const current = (flap.textContent ?? '').replace(/ /g, ' ').trim() || ' ';
-    if (target === current) return;
+    if (target === current && !options.force) return;
 
     setTimeout(() => {
       let n = 0;
@@ -264,7 +266,7 @@ export default function Board() {
       if (!derivedRef.current[i]?.note?.trim() || flipLockRef.current) return;
       flipLockRef.current = true;
       ensureAudio();
-      flipRow(i);
+      flipRow(i, { force: true });
       window.setTimeout(() => {
         flipLockRef.current = false;
         setTripOpen(i);
