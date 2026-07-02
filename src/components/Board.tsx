@@ -1,29 +1,13 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { departures, type Departure } from '../content/departures';
+import { departures } from '../content/departures';
+import { deriveDepartures, MONTH_NAMES, type DerivedDeparture } from '../lib/derive';
 
 const COL_WIDTHS = { dest: 16, flight: 7, gate: 4, status: 9, depart: 11 } as const;
 const FLAP_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·◇○✦—:/. ';
-const MONTH_NAMES = [
-  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
-];
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const rightPad = (text: string, width: number) =>
   String(text).padStart(width, ' ').slice(-width);
-
-function formatDeparture(row: Departure): string {
-  if (row.kind === 'arrived' || row.kind === 'tbd') return row.depart;
-  const target = new Date(row.depart).getTime();
-  const diff = target - Date.now();
-  if (diff <= 0) return 'NOW';
-  const days = Math.floor(diff / 86_400_000);
-  const hours = Math.floor((diff % 86_400_000) / 3_600_000);
-  const mins = Math.floor((diff % 3_600_000) / 60_000);
-  if (days >= 7) return `${days} DAYS`;
-  if (days >= 1) return `${days}D ${pad2(hours)}H`;
-  return `${pad2(hours)}:${pad2(mins)}:00`;
-}
 
 type FlipOptions = { stagger?: number; cycles?: number; cycleMs?: number };
 
@@ -157,7 +141,7 @@ function Row({
   row,
   registerRef,
 }: {
-  row: Departure;
+  row: DerivedDeparture;
   registerRef: (key: CellKey, el: HTMLSpanElement | null) => void;
 }) {
   return (
@@ -186,6 +170,10 @@ export default function Board() {
   const [clock, setClock] = useState<Date>(() => new Date());
   const [soundOn, setSoundOn] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
+
+  const derived = deriveDepartures(departures, clock);
+  const derivedRef = useRef<DerivedDeparture[]>(derived);
+  derivedRef.current = derived;
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const soundOnRef = useRef(soundOn);
@@ -224,14 +212,14 @@ export default function Board() {
 
   const flipRow = useCallback(
     (rowIdx: number, options?: FlipOptions) => {
-      const row = departures[rowIdx];
+      const row = derivedRef.current[rowIdx];
       const refs = rowRefsRef.current[rowIdx];
       if (refs.dest) flipTo(refs.dest, row.dest.padEnd(COL_WIDTHS.dest), clack, options);
       if (refs.flight) flipTo(refs.flight, row.flight.padEnd(COL_WIDTHS.flight), clack, options);
       if (refs.gate) flipTo(refs.gate, row.gate.padEnd(COL_WIDTHS.gate), clack, options);
       if (refs.status) flipTo(refs.status, row.status.padEnd(COL_WIDTHS.status), clack, options);
       if (refs.depart) {
-        flipTo(refs.depart, rightPad(formatDeparture(row), COL_WIDTHS.depart), clack, options);
+        flipTo(refs.depart, rightPad(row.departText, COL_WIDTHS.depart), clack, options);
       }
     },
     [clack],
@@ -258,18 +246,22 @@ export default function Board() {
   }, []);
 
   useEffect(() => {
+    const readCell = (el: HTMLSpanElement) =>
+      Array.from(el.querySelectorAll<HTMLSpanElement>('.flap'))
+        .map((f) => (f.textContent === ' ' ? ' ' : f.textContent ?? ''))
+        .join('');
     const id = window.setInterval(() => {
-      departures.forEach((row, i) => {
-        if (row.kind !== 'boarding' && row.kind !== 'ontime') return;
+      const opts: FlipOptions = { cycles: 3, cycleMs: 50, stagger: 20 };
+      derivedRef.current.forEach((row, i) => {
         const refs = rowRefsRef.current[i];
-        if (!refs.depart) return;
-        const newText = rightPad(formatDeparture(row), COL_WIDTHS.depart);
-        const flaps = refs.depart.querySelectorAll<HTMLSpanElement>('.flap');
-        const current = Array.from(flaps)
-          .map((f) => (f.textContent === ' ' ? ' ' : f.textContent ?? ''))
-          .join('');
-        if (current.trim() !== newText.trim()) {
-          flipTo(refs.depart, newText, clack, { cycles: 3, cycleMs: 50, stagger: 20 });
+        if (refs.status && readCell(refs.status).trim() !== row.status) {
+          flipTo(refs.status, row.status.padEnd(COL_WIDTHS.status), clack, opts);
+        }
+        if (refs.depart) {
+          const newText = rightPad(row.departText, COL_WIDTHS.depart);
+          if (readCell(refs.depart).trim() !== newText.trim()) {
+            flipTo(refs.depart, newText, clack, opts);
+          }
         }
       });
     }, 60_000);
@@ -278,7 +270,7 @@ export default function Board() {
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      const candidates = departures
+      const candidates = derivedRef.current
         .map((row, i) => ({ row, i }))
         .filter(({ row }) => row.kind !== 'arrived' && row.kind !== 'tbd')
         .map(({ i }) => i);
@@ -308,10 +300,10 @@ export default function Board() {
   const clockLabel = `${pad2(clock.getHours())}:${pad2(clock.getMinutes())}:${pad2(clock.getSeconds())}`;
   const dateLabel = `${pad2(clock.getDate())} · ${MONTH_NAMES[clock.getMonth()]} · ${clock.getFullYear()}`;
 
-  // Hero readout: re-renders every second alongside the clock state, so the
-  // Doto countdown stays live without its own timer.
-  const boardingRow = departures.find((r) => r.kind === 'boarding');
-  const boardingCountdown = boardingRow ? formatDeparture(boardingRow) : null;
+  // Hero readout: `derived` is recomputed from the 1s clock tick, so the
+  // Doto countdown stays live and the panel re-binds automatically when a
+  // different trip becomes the boarding one.
+  const boardingRow = derived.find((r) => r.kind === 'boarding');
 
   return (
     <>
@@ -329,7 +321,7 @@ export default function Board() {
           </div>
         </header>
 
-        {boardingRow && boardingCountdown && (
+        {boardingRow && (
           <div className="boarding-panel">
             <div>
               <div className="label">NEXT BOARDING</div>
@@ -339,7 +331,7 @@ export default function Board() {
               </div>
             </div>
             <div>
-              <div className="countdown">{boardingCountdown}</div>
+              <div className="countdown">{boardingRow.departText}</div>
               <div className="countdown-caption">until departure</div>
             </div>
           </div>
@@ -355,7 +347,7 @@ export default function Board() {
         </div>
 
         <div>
-          {departures.map((row, i) => (
+          {derived.map((row, i) => (
             <Row
               key={i}
               row={row}
