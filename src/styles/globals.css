@@ -173,6 +173,16 @@ body::before {
   text-transform: uppercase;
 }
 
+/* Days-apart counter — the emotional inverse of the hero countdown. */
+.clock-block .apart {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--color-steel);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
 /* ============ NEXT BOARDING — DOTO HERO PANEL ============ */
 .boarding-panel {
   background: var(--color-display);

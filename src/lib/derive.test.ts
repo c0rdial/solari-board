@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { deriveDepartures, type DepartureInput } from './derive';
+import { daysApart, deriveDepartures, type DepartureInput } from './derive';
 
 const NOW = new Date('2026-07-02T12:00:00+08:00');
 
@@ -58,5 +58,34 @@ describe('deriveDepartures', () => {
   it('treats a whitespace-only note as absent by leaving it untouched on the derived row', () => {
     const [d] = deriveDepartures([row({ note: '   ' })], NOW);
     expect(d.note).toBe('   '); // derivation passes fields through; UI decides clickability
+  });
+});
+
+describe('daysApart', () => {
+  it('counts whole days since the most recent until date', () => {
+    // Gek left KL on June 14; from July 2 noon that is 18 full days apart.
+    const rows = [
+      row({ depart: '2026-05-24T09:15:00+08:00' }),
+      row({ depart: '2026-06-10T00:00:00+08:00', until: '2026-06-14T00:00:00+08:00' }),
+      row({ depart: '2026-07-16T09:00:00+08:00' }), // upcoming — ignored
+    ];
+    expect(daysApart(rows, NOW)).toBe(18);
+  });
+
+  it('falls back to depart when a past trip has no until date', () => {
+    const rows = [row({ depart: '2026-06-25T12:00:00+08:00' })];
+    expect(daysApart(rows, NOW)).toBe(7);
+  });
+
+  it('returns 0 while a trip is ongoing (depart passed, until still ahead)', () => {
+    const rows = [
+      row({ depart: '2026-06-30T00:00:00+08:00', until: '2026-07-05T00:00:00+08:00' }),
+    ];
+    expect(daysApart(rows, NOW)).toBe(0);
+  });
+
+  it('returns null when there are no past trips at all', () => {
+    const rows = [row({}), row({ depart: '2026-12-01T07:30:00+08:00' })];
+    expect(daysApart(rows, NOW)).toBeNull();
   });
 });

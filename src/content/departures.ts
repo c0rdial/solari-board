@@ -27,6 +27,11 @@ export const departures: Departure[] = [
     note: "miss you already. cried a little at the gate, didn't tell you.",
   },
   {
+    dest: 'KUALA LUMPUR', flight: '——', gate: '——',
+    depart: '2026-06-10T00:00:00+08:00', until: '2026-06-14T00:00:00+08:00',
+    note: 'four days. not enough. it never is.',
+  },
+  {
     dest: 'DENPASAR', flight: 'GA 821', gate: '——', depart: '2026-07-16T09:00:00+08:00',
     note: 'counting down. bring the sunscreen you always forget.',
   },

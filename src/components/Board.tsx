@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { departures } from '../content/departures';
-import { deriveDepartures, MONTH_NAMES, type DerivedDeparture } from '../lib/derive';
+import { daysApart, deriveDepartures, MONTH_NAMES, type DerivedDeparture } from '../lib/derive';
 import { startAmbience, type AmbienceHandle } from '../lib/ambience';
 
 const COL_WIDTHS = { dest: 16, flight: 7, gate: 4, status: 9, depart: 11 } as const;
@@ -366,6 +366,7 @@ export default function Board() {
   // Doto countdown stays live and the panel re-binds automatically when a
   // different trip becomes the boarding one.
   const boardingRow = derived.find((r) => r.kind === 'boarding');
+  const apartDays = daysApart(departures, clock);
 
   return (
     <>
@@ -380,6 +381,13 @@ export default function Board() {
             <div className="clock">{clockLabel}</div>
             <div className="date">{dateLabel}</div>
             <div className="location">KUL · DPS · UTC +08</div>
+            {apartDays !== null && (
+              <div className="apart">
+                {apartDays === 0
+                  ? 'SAME PLACE · TODAY'
+                  : `APART · ${apartDays} ${apartDays === 1 ? 'DAY' : 'DAYS'}`}
+              </div>
+            )}
           </div>
         </header>
 

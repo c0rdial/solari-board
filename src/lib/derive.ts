@@ -7,6 +7,7 @@ export type DepartureInput = {
   flight: string;
   gate: string;
   depart?: string; // ISO 8601 with offset; absent = wishlist/TBD
+  until?: string;  // ISO 8601 with offset; when the together-window ended
   note?: string;
 };
 
@@ -91,4 +92,22 @@ export function deriveDepartures(
       departText: countdownText(t, nowMs),
     };
   });
+}
+
+// Whole days since the two of you were last in the same place: the most
+// recent trip-end (`until`, falling back to `depart` for single-instant
+// rows). Returns 0 while a trip is ongoing, null if no trip has happened.
+export function daysApart(rows: DepartureInput[], now: Date): number | null {
+  const nowMs = now.getTime();
+  let lastParted = -Infinity;
+  for (const row of rows) {
+    const start = row.depart ? new Date(row.depart).getTime() : NaN;
+    if (Number.isNaN(start) || start > nowMs) continue;
+    const end = row.until ? new Date(row.until).getTime() : start;
+    if (Number.isNaN(end)) continue;
+    if (end > nowMs) return 0; // depart passed, until ahead: together right now
+    if (end > lastParted) lastParted = end;
+  }
+  if (lastParted === -Infinity) return null;
+  return Math.floor((nowMs - lastParted) / 86_400_000);
 }
