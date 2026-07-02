@@ -324,6 +324,14 @@ body::before {
 }
 .row.tbd .cell:not(.cell-status) { color: var(--color-slate); }
 
+/* Rows with an authored note are clickable — subtle lift as the cue. */
+.row.has-note { cursor: pointer; }
+.row.has-note:hover { filter: brightness(1.18); transform: translateY(-1px); }
+.row.has-note:focus-visible {
+  outline: 2px solid var(--color-active);
+  outline-offset: 2px;
+}
+
 /* Symbol column */
 .cell-sym {
   text-align: center;

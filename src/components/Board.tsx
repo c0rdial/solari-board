@@ -140,12 +140,30 @@ function FlapRow({
 function Row({
   row,
   registerRef,
+  onOpen,
 }: {
   row: DerivedDeparture;
   registerRef: (key: CellKey, el: HTMLSpanElement | null) => void;
+  onOpen: () => void;
 }) {
+  const clickable = Boolean(row.note?.trim());
   return (
-    <div className={`row ${row.kind}`}>
+    <div
+      className={`row ${row.kind}${clickable ? ' has-note' : ''}`}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onClick={clickable ? onOpen : undefined}
+      onKeyDown={
+        clickable
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpen();
+              }
+            }
+          : undefined
+      }
+    >
       <div className="cell-sym">{row.sym}</div>
       <div className="cell cell-dest">
         <FlapRow width={COL_WIDTHS.dest} cellRef={(el) => registerRef('dest', el)} />
@@ -170,6 +188,8 @@ export default function Board() {
   const [clock, setClock] = useState<Date>(() => new Date());
   const [soundOn, setSoundOn] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [tripOpen, setTripOpen] = useState<number | null>(null);
+  const flipLockRef = useRef(false);
 
   const derived = deriveDepartures(departures, clock);
   const derivedRef = useRef<DerivedDeparture[]>(derived);
@@ -223,6 +243,23 @@ export default function Board() {
       }
     },
     [clack],
+  );
+
+  // Flip-then-reveal: replay the row's split-flap animation, then open the
+  // card once the flaps settle (~950ms covers 6 cycles + stagger across the
+  // widest cell). The lock ignores repeat clicks mid-flip.
+  const openTrip = useCallback(
+    (i: number) => {
+      if (!derivedRef.current[i]?.note?.trim() || flipLockRef.current) return;
+      flipLockRef.current = true;
+      ensureAudio();
+      flipRow(i);
+      window.setTimeout(() => {
+        flipLockRef.current = false;
+        setTripOpen(i);
+      }, 950);
+    },
+    [ensureAudio, flipRow],
   );
 
   // Initial cascade. No started-ref guard: StrictMode's double-invoke
@@ -289,13 +326,16 @@ export default function Board() {
   }, [ensureAudio]);
 
   useEffect(() => {
-    if (!infoOpen) return;
+    if (!infoOpen && tripOpen === null) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setInfoOpen(false);
+      if (e.key === 'Escape') {
+        setInfoOpen(false);
+        setTripOpen(null);
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [infoOpen]);
+  }, [infoOpen, tripOpen]);
 
   const clockLabel = `${pad2(clock.getHours())}:${pad2(clock.getMinutes())}:${pad2(clock.getSeconds())}`;
   const dateLabel = `${pad2(clock.getDate())} · ${MONTH_NAMES[clock.getMonth()]} · ${clock.getFullYear()}`;
@@ -351,6 +391,7 @@ export default function Board() {
             <Row
               key={i}
               row={row}
+              onOpen={() => openTrip(i)}
               registerRef={(key, el) => {
                 rowRefsRef.current[i][key] = el;
               }}
@@ -408,6 +449,27 @@ export default function Board() {
               </div>
             </div>
             <button className="close" onClick={() => setInfoOpen(false)}>
+              close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {tripOpen !== null && derived[tripOpen] && (
+        <div
+          className="info-overlay open"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setTripOpen(null);
+          }}
+        >
+          <div className="info-card">
+            <h2>{derived[tripOpen].dest.toLowerCase()}</h2>
+            <div className="sub">
+              {derived[tripOpen].flight} · GATE {derived[tripOpen].gate} ·{' '}
+              {derived[tripOpen].status} · {derived[tripOpen].departText}
+            </div>
+            <p style={{ whiteSpace: 'pre-line' }}>{derived[tripOpen].note}</p>
+            <button className="close" onClick={() => setTripOpen(null)}>
               close
             </button>
           </div>
