@@ -8,40 +8,40 @@ export type Departure = DepartureInput;
 export const departures: Departure[] = [
   {
     dest: 'DENPASAR', flight: 'AK 384', gate: 'B12', depart: '2024-12-01T00:00:00+08:00',
-    note: "the first time we said ‘let's just go.’ i still have the boarding pass.",
+    note: 'the jamie xx concert. where our souls first interacted.',
   },
   {
     dest: 'DENPASAR', flight: 'TR 158', gate: 'B07', depart: '2026-01-01T00:00:00+08:00',
-    note: 'the same beach, second date. you fell asleep before we even took off.',
+    note: 'the second time — getting to know each other for real, in person.',
   },
   {
     dest: 'HONG KONG', flight: 'CX 716', gate: 'C24', depart: '2026-03-01T00:00:00+08:00',
-    note: 'neon and dumplings and getting lost in causeway bay on purpose.',
+    note: 'where it started. loved partying with you.',
   },
   {
     dest: 'KUALA LUMPUR', flight: 'AK 707', gate: 'A11', depart: '2026-04-01T00:00:00+08:00',
-    note: "petronas at midnight, and you still said it wasn't as tall as you imagined.",
+    note: 'your first time in KL. seeing Pak V, running around town.',
   },
   {
     dest: 'DENPASAR', flight: 'OD 177', gate: 'B12', depart: '2026-05-24T09:15:00+08:00',
-    note: "miss you already. cried a little at the gate, didn't tell you.",
+    note: 'my first visit as your boyfriend. the house party.',
   },
   {
     dest: 'KUALA LUMPUR', flight: '——', gate: '——',
     depart: '2026-06-10T00:00:00+08:00', until: '2026-06-14T00:00:00+08:00',
-    note: 'four days. not enough. it never is.',
+    note: "you came back for Pak V's funeral. a tough time — but you are strong, and i saw one of the most beautiful parts of you.",
   },
   {
     dest: 'DENPASAR', flight: 'GA 821', gate: '——', depart: '2026-07-16T09:00:00+08:00',
-    note: 'counting down. bring the sunscreen you always forget.',
+    note: '(pending memories)',
   },
   {
     dest: 'JAKARTA', flight: 'GA 407', gate: '——', depart: '2026-07-23T09:00:00+08:00',
-    note: 'quick one right after bali — see you before the goodbye even settles.',
+    note: '(pending memories)',
   },
   {
     dest: 'BANGKOK', flight: 'MH 774', gate: 'A03', depart: '2026-12-01T07:30:00+08:00',
-    note: 'already thinking about it. street food and getting hopelessly lost together.',
+    note: '(pending memories)',
   },
   {
     dest: 'DENPASAR', flight: '——', gate: '——',
