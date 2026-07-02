@@ -10,6 +10,12 @@ const pad2 = (n: number) => String(n).padStart(2, '0');
 const rightPad = (text: string, width: number) =>
   String(text).padStart(width, ' ').slice(-width);
 
+// Live tracking only means anything for a flight that's actually near its
+// travel window — arrived trips are history and TBD rows have no real
+// flight number, so only boarding/ontime rows get a track link.
+const flightradar24Url = (flight: string) =>
+  `https://www.flightradar24.com/data/flights/${flight.replace(/\s+/g, '').toLowerCase()}`;
+
 type FlipOptions = { stagger?: number; cycles?: number; cycleMs?: number };
 
 // Imperative DOM mutation — the mockup's flip routine, ported verbatim.
@@ -485,6 +491,16 @@ export default function Board() {
               {derived[tripOpen].status} · {derived[tripOpen].departText}
             </div>
             <p style={{ whiteSpace: 'pre-line' }}>{derived[tripOpen].note}</p>
+            {(derived[tripOpen].kind === 'boarding' || derived[tripOpen].kind === 'ontime') && (
+              <a
+                className="track-link"
+                href={flightradar24Url(derived[tripOpen].flight)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                track flight ↗
+              </a>
+            )}
             <button className="close" onClick={() => setTripOpen(null)}>
               close
             </button>
