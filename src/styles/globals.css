@@ -2,13 +2,18 @@
 
 /* ============================================================
    DESIGN.md tokens — aircraft control panel.
-   Warm sand chassis, dark embedded display screens, urgency red
+   Aged manila card-stock chassis, dark embedded display screens, urgency red
    reserved for critical signaling. Typography pairs Proxima Nova
    (system-ui fallback), SF Mono (JetBrains Mono fallback for
    non-Mac), and Doto for the hero numerical readout.
    ============================================================ */
 :root {
-  --color-canvas:        #d6c9a3;
+  /* Chassis reads as the card stock a flight manifest is printed on:
+     cream, sun-faded toward the bottom edge, foxed unevenly. */
+  --color-canvas:        #e9e3d4;
+  --color-canvas-hi:     #f4f0e6;
+  --color-canvas-lo:     #dad2bd;
+  --color-foxing:        rgba(146, 118, 68, 0.16);
   --color-display:       #11161c;
   --color-obsidian:      #000000;
   --color-white:         #ffffff;
@@ -55,13 +60,28 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Paper, not panel: an edge vignette plus two off-centre foxing blooms over
+   a top-lit fade, so the sheet never reads as a flat fill. This lives on
+   <html>, not <body> — a body gradient stops at the body box and leaves a
+   flat seam below the board. Fixed attachment keeps the sheet still while
+   the board scrolls over it. */
+html {
+  background:
+    radial-gradient(125% 100% at 50% 45%, transparent 52%, rgba(88, 68, 32, 0.11) 100%),
+    radial-gradient(62% 48% at 14% 9%, var(--color-foxing) 0%, transparent 60%),
+    radial-gradient(54% 44% at 87% 34%, var(--color-foxing) 0%, transparent 62%),
+    linear-gradient(180deg,
+      var(--color-canvas-hi) 0%, var(--color-canvas) 46%, var(--color-canvas-lo) 100%);
+  /* Re-assert the base after the shorthand — it resets background-color to
+     transparent, and fixed layers only cover the viewport, so anything past
+     it would fall through to white. */
+  background-color: var(--color-canvas);
+  background-attachment: fixed;
+}
+
 body {
   min-height: 100vh;
   position: relative;
-  /* Subtle warm tint at the seam between chassis and the display panels —
-     replaces the old radial gradient. Reads as ambient cabin light, not space. */
-  background:
-    linear-gradient(180deg, #ded2ab 0%, var(--color-canvas) 50%, #c4b489 100%);
 }
 
 /* Faint engineered grid — DESIGN.md "imagery" calls for grid lines
@@ -71,9 +91,25 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(74, 58, 28, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(74, 58, 28, 0.055) 1px, transparent 1px);
   background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Paper tooth. Fractal noise multiplied into the chassis so the cream reads
+   as stock with a surface rather than a flat colour. Fixed, not scrolled —
+   the grain belongs to the sheet, not to the content moving over it. The
+   .board sits at z-index 1, so the dark display panels stay crisp. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.38;
+  mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 0;
 }
