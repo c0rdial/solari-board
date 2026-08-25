@@ -10,6 +10,7 @@ export const DEST_COORDS: Record<string, { lat: number; lon: number }> = {
   'HONG KONG':    { lat: 22.3,   lon: 114.17 },
   COLOMBO:        { lat: 6.93,   lon: 79.85  },
   MILAN:          { lat: 45.46,  lon: 9.19   },
+  BUDAPEST:       { lat: 47.5,   lon: 19.04  },
 };
 
 // WMO weather interpretation codes → short labels in the board's voice.

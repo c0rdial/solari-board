@@ -33,10 +33,23 @@ export const departures: Departure[] = [
   },
   {
     dest: 'DENPASAR', flight: 'GA 821', gate: '——', depart: '2026-07-16T09:00:00+08:00',
-    note: '(pending memories)',
+    note: 'tennis, the site visit, cooking together — that was really cute. and sanur: walking down the beach with you as my tour guide. sanur needs a re-do, and i’m sorry.',
   },
   {
     dest: 'JAKARTA', flight: 'GA 407', gate: '——', depart: '2026-07-23T09:00:00+08:00',
+    note: 'a short transit. but a lot was said that day.',
+  },
+  {
+    dest: 'BUDAPEST', flight: 'RJ 1033', gate: 'BUS', depart: '2026-08-03T00:00:00+02:00',
+    note: 'sesh at brody house — and the w hotel budapest toilet ;) new city unlocked!',
+  },
+  {
+    dest: 'KUALA LUMPUR', flight: 'AK 369', gate: '——',
+    depart: '2026-08-20T00:00:00+08:00', until: '2026-08-23T00:00:00+08:00',
+    note: 'you flew in for my birthday. you made me feel like the luckiest man on earth.',
+  },
+  {
+    dest: 'DENPASAR', flight: 'OD 157', gate: '——', depart: '2026-09-10T09:00:00+08:00',
     note: '(pending memories)',
   },
   {
