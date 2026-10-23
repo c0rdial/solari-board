@@ -54,7 +54,7 @@ export const departures: Departure[] = [
   },
   {
     dest: 'KUALA LUMPUR', flight: '——', gate: '——', depart: '2026-10-10T00:00:00+08:00',
-    note: "venus retrograde in scorpio. diamonds are forever but also a result of a lot of pressure. it'll be okay.",
+    note: "venus retrograde in scorpio when you landed — a heavy sky to come under. but diamonds are forever, and they come from exactly this kind of pressure. we'll be okay, baby.",
   },
   {
     dest: 'DENPASAR', flight: 'MH 853', gate: '——', depart: '2026-10-31T09:00:00+08:00',
