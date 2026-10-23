@@ -50,6 +50,14 @@ export const departures: Departure[] = [
   },
   {
     dest: 'DENPASAR', flight: 'OD 157', gate: '——', depart: '2026-09-10T09:00:00+08:00',
+    note: "celebrated the best virgo in the entire world. tree house in penestanan and also a reminder that we have to go to locavore next together during day time! happiest birthday baby girl. you're so beautiful and talented.",
+  },
+  {
+    dest: 'KUALA LUMPUR', flight: '——', gate: '——', depart: '2026-10-10T00:00:00+08:00',
+    note: '(pending memories)',
+  },
+  {
+    dest: 'DENPASAR', flight: 'MH 853', gate: '——', depart: '2026-10-31T09:00:00+08:00',
     note: '(pending memories)',
   },
   {
