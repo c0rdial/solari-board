@@ -38,7 +38,7 @@ function flipTo(
 
   flaps.forEach((flap, i) => {
     const target = padded[i];
-    const current = (flap.textContent ?? '').replace(/ /g, ' ').trim() || ' ';
+    const current = (flap.textContent ?? '').replace(/\u00A0/g, ' ').trim() || ' ';
     if (target === current && !options.force) return;
 
     setTimeout(() => {
@@ -204,11 +204,15 @@ export default function Board() {
 
   const derived = deriveDepartures(departures, clock);
   const derivedRef = useRef<DerivedDeparture[]>(derived);
-  derivedRef.current = derived;
+  useEffect(() => {
+    derivedRef.current = derived;
+  }, [derived]);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const soundOnRef = useRef(soundOn);
-  soundOnRef.current = soundOn;
+  useEffect(() => {
+    soundOnRef.current = soundOn;
+  }, [soundOn]);
   const ambienceRef = useRef<AmbienceHandle | null>(null);
 
   const rowRefsRef = useRef<RowRefs[]>(
